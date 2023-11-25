@@ -3,7 +3,7 @@ import {useState} from "react";
 // import {Fab, TextField, TextareaAutosize, Grid} from '/node_modules/@material-ui/core'
 // import {ArrowBack, GetApp} from '@material-ui/icons'
 function QRgenerator(props) {
-    const [qr, setQr] = useState('https://statyla.ru/');
+    const [qr, setQr] = useState('https://statyla.ru/hello-world-10-21');
     const handleChange = (event) => {
         setQr(event.target.value);
     };
@@ -20,13 +20,14 @@ function QRgenerator(props) {
         document.body.removeChild(downloadLink);
     };
     // let abc = document.
+    console.log(props)
     return (
         <div>
             <span>QR Generator</span>
 
             <div style={{marginTop:30}}>
                 <input onChange={handleChange} style={{width:320}}
-                           value={qr}  size="large" color="primary"
+                           value={qr+props}  size="large" color="primary"
                 />
             </div>
 
@@ -35,7 +36,7 @@ function QRgenerator(props) {
                     qr ?
                         <QRcode
                             id="myqr"
-                            value={qr+props}
+                            value={qr+props.linkForArticle}
                             size={320}
                             includeMargin={true}
                         /> :

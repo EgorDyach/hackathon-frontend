@@ -9,51 +9,43 @@ import "./editor.css";
 import {serverAddArticle} from '../sendArticle.js'
 import {Modal} from "../modal/modal";
 import Select from 'react-select'
-// import QRCode, {QRCodeCanvas, QRCodeSVG} from 'qrcode.react';
-import QRCode from "react-qr-code";
-import chroma from 'chroma-js';
+// import Document from '@tiptap/extension-document'
+// import Dropcursor from '@tiptap/extension-dropcursor'
+import Image from '@tiptap/extension-image'
+// import Paragraph from '@tiptap/extension-paragraph'
+// import Text from '@tiptap/extension-text'
+import { EditorContent, useEditor } from '@tiptap/react'
 Link.configure({
     autolink: false,
     openOnClick: true,
 })
 // import { ColourOption, colourOptions } from '../data';
 const colourOptions = [
+    {value: 'light', label: 'light'},
+    {value: 'dark', label: 'dark'},
     { value: 'green', label: 'green' },
     { value: 'blue', label: 'blue' },
     { value: 'red', label: 'red' },
-
+    {value: 'yellow', label: 'yellow'}
 ]
 
 
 const MenuBar = () => {
     const { editor } = useCurrentEditor()
-
-    const setLink = useCallback(() => {
-        const previousUrl = editor.getAttributes('link').href
-        const url = window.prompt('URL', previousUrl)
-
-        // cancelled
-        if (url === null) {
-            return
-        }
-
-        // empty
-        if (url === '') {
-            editor.chain().focus().extendMarkRange('link').unsetLink()
-                .run()
-
-            return
-        }
-
-        // update link
-        editor.chain().focus().extendMarkRange('link').setLink({ href: url })
-            .run()
-    }, [editor])
     const [Title, setTitle] = useState('');
     const [UnderTitle, setUnderTitle] = useState('');
+    const addImage = useCallback(() => {
+        const url = window.prompt('URL')
+
+        if (url) {
+            editor.chain().focus().setImage({ src: url }).run()
+        }
+    }, [editor])
+
     if (!editor) {
         return null
     }
+
 
     return (
         <div>
@@ -120,9 +112,18 @@ const MenuBar = () => {
             >
                 h2
             </button>
-            <button onClick={setLink} className={editor.isActive('link') ? 'is-active' : ''}>
-                setLink
-            </button>
+            <button className={'editor__menu-btn'} onClick={addImage}><svg xmlns="http://www.w3.org/2000/svg" width="18" height="17" viewBox="0 0 18 17" fill="none">
+                <path d="M0.5 8.48999C0.5 4.34785 3.85786 0.98999 8 0.98999H17.5V8.48999C17.5 12.6321 14.1421 15.99 10 15.99H0.5V8.48999Z" stroke="black"/>
+                <circle cx="9" cy="8.48999" r="2.5" fill="white" stroke="black"/>
+                <path d="M9 2.48999L9 4.48999" stroke="black"/>
+                <path d="M9 12.49L9 14.49" stroke="black"/>
+                <path d="M13 8.48999L15 8.49276" stroke="black"/>
+                <path d="M3 8.48999L5 8.49276" stroke="black"/>
+                <path d="M12 5.90417L13.4142 4.48996" stroke="black"/>
+                <path d="M5 4.48999L6.41421 5.9042" stroke="black"/>
+                <path d="M12 11.49L13.4142 12.9042" stroke="black"/>
+                <path d="M5 12.9042L6.41421 11.49" stroke="black"/>
+            </svg></button>
             <button
                 onClick={() => editor.chain().focus().toggleBulletList().run()}
                 className={editor.isActive('bulletList') ? 'is-active editor__menu-bulletList editor__menu-btn' : 'editor__menu-bulletList editor__menu-btn'}
@@ -160,6 +161,7 @@ const MenuBar = () => {
 
 const extensions = [
     Color.configure({ types: [TextStyle.name, ListItem.name] }),
+    Image.configure(),
     StarterKit.configure({
         bulletList: {
             keepMarks: true,
@@ -177,9 +179,9 @@ export const Editor =  () => {
 
     const [Title, setTitle] = useState('');
     const [UnderTitle, setUnderTitle] = useState('');
-    const [link, setLink] = useState('')
-    editor.commands.setLink({ href: 'https://example.com' })
-    editor.commands.setLink({ href: 'https://example.com', target: '_blank' })
+    const [, setLink] = useState('')
+
+
 
     return (
         <div className={"editor__div"}>
@@ -188,13 +190,12 @@ export const Editor =  () => {
             <div className={"editor__bottom-menu"}>
                 <button className={'submit'} onClick={() => {
                     let contentToServer = document.querySelector('.tiptap').innerHTML;
-                    let imagesLinks = document.querySelectorAll();
+                    // let imagesLinks = document.querySelectorAll('.qweqeqweqeqeqw');
                     let Article = {
                         "content": contentToServer,
                         "title": document.getElementById('Title').value,
                         "subtitle": document.getElementById('undertitle').value,
                         'theme': document.querySelector(".css-1dimb5e-singleValue").textContent,
-                        'images':imagesLinks
                     }
                     console.log(Article)
                     serverAddArticle(Article).then(() => {
@@ -210,7 +211,7 @@ export const Editor =  () => {
                         };
 
 // close the modal when the close button and overlay is clicked
-                        closeModalBtn.addEventListener("click", closeModal);
+//                         closeModalBtn.addEventListener("click", closeModal);
                         overlay.addEventListener("click", closeModal);
 
 // close modal when the Esc key is pressed

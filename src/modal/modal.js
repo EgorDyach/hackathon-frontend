@@ -1,8 +1,24 @@
 import {QRCodeSVG} from "qrcode.react";
-import React from "react";
-import QRgenerator from "../Article/qrcode";
+import React, {useState} from "react";
 
 export function Modal(linkQr) {
+    function QRgenerator(props) {
+        const [qr, setQr] = useState('https://statyla.ru/');
+        const handleChange = (event) => {
+            setQr(event.target.value);
+        };
+        const downloadQR = () => {
+            const canvas = document.getElementById("myqr");
+            const pngUrl = canvas
+                .toDataURL("image/png")
+                .replace("image/png", "image/octet-stream");
+            let downloadLink = document.createElement("a");
+            downloadLink.href = pngUrl;
+            downloadLink.download = "myqr.png";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        };
 
     return (
 
@@ -16,6 +32,6 @@ export function Modal(linkQr) {
             <h2 id={"link"}>https://statyla.ru/article/{123}</h2>
         </section>
     )
-}
+}}
 
 

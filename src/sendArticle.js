@@ -1,4 +1,4 @@
-export const SERVER_URL = 'https://statyla.ru'
+export const SERVER_URL = 'https://api.statyla.ru'
 
 export async function serverAddArticle(Article) {
     console.log('started')
@@ -19,7 +19,7 @@ export async function serverGetByIdArticle(id) {
         headers: { 'Content-Type': 'application/json' },
     }))
     let dataObj = await response.json()
-    dataObj = dataObj.toString()
+
     return dataObj
 }
 
